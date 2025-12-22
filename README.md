@@ -41,6 +41,22 @@ This is a comprehensive frontend template based on modern web development standa
    npm run build
    ```
 
+## Adapting for a New Project
+
+To use this template for a new project, follow these steps:
+
+1. **Copy the Template:** Use this folder as your project's boilerplate.
+2. **Update Project Metadata:**
+   - In `package.json`, update `name`, `version`, and `description`.
+   - In `index.html`, update the `<title>` tag to your project's name.
+3. **Follow the [AGENTS.md](file:///c:/Users/DELL/repos/templates/frontend-template/AGENTS.md):** This file contains the coding "Gospel" for the project.
+
+## AI Collaboration
+
+This project is optimized for AI-assisted development. To work effectively with an AI agent:
+1. Ensure the agent has read [AGENTS.md](file:///c:/Users/DELL/repos/templates/frontend-template/AGENTS.md).
+2. Ask the agent to follow the standards defined there for any new routes, components, or logic.
+
 ## Coding Principles
 - Use the URL as the primary source of truth for UI state.
 - Strictly use TanStack Query for all data fetching (no `useEffect` for data).
