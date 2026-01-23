@@ -5,7 +5,7 @@ on:
     branches: [ develop, main ]
 
 env:
-  IMAGE_NAME: {{project_name}}
+  IMAGE_NAME: "{{project_name}}"
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
