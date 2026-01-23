@@ -1,65 +1,114 @@
-# Frontend Development Template
+# Frontend Template
 
-This is a comprehensive frontend template based on modern web development standards.
+A production-ready React frontend template with TypeScript, TanStack Router, and Tailwind CSS.
 
-## Tech Stack
-- **Framework:** Vite + React 19 + TypeScript
-- **Routing:** TanStack Router (File-based)
-- **Data Fetching:** TanStack Query (v5)
-- **Styling:** Tailwind CSS + shadcn/ui
-- **State Management:** Zustand (Client State), TanStack Query (Server State)
+## Features
 
-## Directory Structure
-- `src/components/ui/`: shadcn/ui primitives.
-- `src/components/domain/`: Application-specific components.
-- `src/routes/`: Route definitions (TanStack Router).
-- `src/hooks/`: Custom React hooks.
-- `src/lib/`: Shared utilities and API configuration.
-- `src/services/`: Pure TypeScript business logic.
-- `src/stores/`: Zustand state stores.
+- **Vite + React 19**: Lightning-fast development
+- **TypeScript**: Full type safety
+- **TanStack Router**: File-based routing
+- **TanStack Query**: Server state management
+- **Tailwind CSS + shadcn/ui**: Modern styling
+- **Zustand**: Client state management
+- **Docker**: Production-ready with nginx
+- **Pre-commit**: Automated code quality (prettier, eslint, tsc)
 
-## Getting Started
+## Quick Start
 
-1. **Install Dependencies:**
+### Option 1: Git Clone (Universal)
+
+```bash
+git clone --depth=1 https://github.com/Wellnest-Group/wng_ui_template my-project
+cd my-project
+./init-project.sh my-project   # Unix/macOS
+# or
+.\init-project.ps1 my-project  # Windows PowerShell
+```
+
+### Option 2: degit (Requires Node.js)
+
+```bash
+npx degit Wellnest-Group/wng_ui_template my-project
+cd my-project
+./init-project.sh my-project
+```
+
+### Option 3: GitHub Template
+
+1. Click **"Use this template"** on GitHub
+2. Clone your new repository
+3. Run the init script:
    ```bash
-   npm install
+   ./init-project.sh my-project
    ```
 
-2. **Install Pre-commit Hooks:**
-   If you have `pre-commit` installed on your system, run:
-   ```bash
-   pre-commit install
-   ```
+## What the Init Script Does
 
-3. **Run Development Server:**
-   ```bash
-   npm run dev
-   ```
+1. ✅ Checks for `pre-commit` and `node` (fails with instructions if missing)
+2. ✅ Replaces all placeholders with your project name
+3. ✅ Reinitializes git (fresh history)
+4. ✅ Installs pre-commit hooks
+5. ✅ Runs `npm install`
 
-3. **Build for Production:**
-   ```bash
-   npm run build
-   ```
+## Prerequisites
 
-## Adapting for a New Project
+- [Node.js](https://nodejs.org/) 20+
+- [pre-commit](https://pre-commit.com/) - Git hooks framework
 
-To use this template for a new project, follow these steps:
+## Development
 
-1. **Copy the Template:** Use this folder as your project's boilerplate.
-2. **Update Project Metadata:**
-   - In `package.json`, update `name`, `version`, and `description`.
-   - In `index.html`, update the `<title>` tag to your project's name.
-3. **Follow the [AGENTS.md](file:///c:/Users/DELL/repos/templates/frontend-template/AGENTS.md):** This file contains the coding "Gospel" for the project.
+```bash
+# Start dev server
+npm run dev
 
-## AI Collaboration
+# Type check
+npm run type-check
 
-This project is optimized for AI-assisted development. To work effectively with an AI agent:
-1. Ensure the agent has read [AGENTS.md](file:///c:/Users/DELL/repos/templates/frontend-template/AGENTS.md).
-2. Ask the agent to follow the standards defined there for any new routes, components, or logic.
+# Lint
+npm run lint
 
-## Coding Principles
-- Use the URL as the primary source of truth for UI state.
-- Strictly use TanStack Query for all data fetching (no `useEffect` for data).
-- Wrap API calls in custom hooks.
-- Prefer functional components and `const` definitions.
-- Mobile-first responsive design with Tailwind.
+# Format
+npm run format
+
+# Build for production
+npm run build
+```
+
+## Docker
+
+```bash
+# Build
+docker build -t my-project .
+
+# Run
+docker run -p 3000:80 my-project
+```
+
+## Project Structure
+
+```
+├── src/
+│   ├── components/
+│   │   ├── ui/           # shadcn/ui primitives
+│   │   └── domain/       # App-specific components
+│   ├── routes/           # TanStack Router pages
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utilities & API config
+│   ├── services/         # Business logic
+│   └── stores/           # Zustand stores
+├── Dockerfile
+├── docker-build.yml      # CI/CD workflow
+└── package.json
+```
+
+## Coding Standards
+
+- Use URL as source of truth for UI state
+- Use TanStack Query for all data fetching (no `useEffect` for data)
+- Wrap API calls in custom hooks
+- Mobile-first responsive design
+- Follow the [AGENTS.md](./AGENTS.md) for AI-assisted development
+
+## License
+
+MIT

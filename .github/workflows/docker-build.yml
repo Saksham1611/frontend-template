@@ -1,0 +1,48 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches: [ develop, main ]
+
+env:
+  IMAGE_NAME: {{project_name}}
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-deploy-dev:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: [dev-linux-arm]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker image (dev)
+      run: |
+        docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
+        docker build -t ${{ env.IMAGE_NAME }}:latest .
+
+    - name: Run container (dev)
+      run: |
+        docker rm -f ${{ env.IMAGE_NAME }} || true
+        docker run -d --name ${{ env.IMAGE_NAME }} -p 3000:80 \
+          ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+  build-and-deploy-prod:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [prod-linux-arm]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker image (prod)
+      run: |
+        docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
+        docker build -t ${{ env.IMAGE_NAME }}:latest .
+
+    - name: Run container (prod)
+      run: |
+        docker rm -f ${{ env.IMAGE_NAME }} || true
+        docker run -d --name ${{ env.IMAGE_NAME }} -p 3000:80 \
+          ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
