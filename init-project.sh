@@ -22,58 +22,63 @@ PROJECT_NAME_UNDERSCORE="${PROJECT_NAME//-/_}"
 
 echo -e "${YELLOW}📦 Project name: ${PROJECT_NAME}${NC}"
 
-# Check prerequisites
+# Check for node
 echo -e "\n${YELLOW}🔍 Checking prerequisites...${NC}"
-
-if ! command -v pre-commit &> /dev/null; then
-    echo -e "${RED}❌ pre-commit is required but not installed.${NC}"
-    echo "Install with: pip install pre-commit"
-    exit 1
-fi
-echo -e "${GREEN}✓ pre-commit found${NC}"
-
 if ! command -v node &> /dev/null; then
     echo -e "${RED}❌ Node.js is required but not installed.${NC}"
+    echo "Please install Node.js (v20+) from: https://nodejs.org/"
     exit 1
 fi
-echo -e "${GREEN}✓ Node.js found${NC}"
+echo -e "${GREEN}✓ Node.js found ($(node -v))${NC}"
+
+# Check for pre-commit (optional but recommended)
+echo -e "\n${YELLOW}🔍 Checking optional tools...${NC}"
+HAS_PRECOMMIT=true
+if ! command -v pre-commit &> /dev/null; then
+    echo -e "${YELLOW}⚠️ pre-commit not found. Initial setup will skip git hook installation.${NC}"
+    echo "Recommended: pip install pre-commit"
+    HAS_PRECOMMIT=false
+fi
 
 # Replace placeholders
 echo -e "\n${YELLOW}📝 Replacing placeholders...${NC}"
+PLACEHOLDER="bootstrap-project-frontend"
 
 # package.json
 if [ -f "package.json" ]; then
-    sed -i.bak "s/\"name\": \"frontend-template\"/\"name\": \"${PROJECT_NAME}\"/" package.json
-    sed -i.bak "s/\"name\": \"{{project_name}}\"/\"name\": \"${PROJECT_NAME}\"/" package.json
+    sed -i.bak "s/${PLACEHOLDER}/${PROJECT_NAME}/g" package.json
     rm -f package.json.bak
     echo "  ✓ package.json"
 fi
 
 # index.html
 if [ -f "index.html" ]; then
-    sed -i.bak "s/<title>Frontend Template<\/title>/<title>${PROJECT_NAME}<\/title>/" index.html
-    sed -i.bak "s/<title>{{project_name}}<\/title>/<title>${PROJECT_NAME}<\/title>/" index.html
+    sed -i.bak "s/${PLACEHOLDER}/${PROJECT_NAME}/g" index.html
     rm -f index.html.bak
     echo "  ✓ index.html"
 fi
 
 # docker-build.yml
 if [ -f ".github/workflows/docker-build.yml" ]; then
-    sed -i.bak "s/{{project_name}}/${PROJECT_NAME_UNDERSCORE}/" .github/workflows/docker-build.yml
+    sed -i.bak "s/{{project_name}}/${PROJECT_NAME_UNDERSCORE}/g" .github/workflows/docker-build.yml
     rm -f .github/workflows/docker-build.yml.bak
     echo "  ✓ docker-build.yml"
 fi
 
 # Reinitialize git
-echo -e "\n${YELLOW}🔄 Reinitializing git repository...${NC}"
-rm -rf .git
-git init
-echo -e "${GREEN}✓ Fresh git repository created${NC}"
+if [ -d ".git" ]; then
+    echo -e "\n${YELLOW}🔄 Reinitializing git repository...${NC}"
+    rm -rf .git
+    git init
+    echo -e "${GREEN}✓ Fresh git repository created${NC}"
+fi
 
 # Install pre-commit hooks
-echo -e "\n${YELLOW}🪝 Installing pre-commit hooks...${NC}"
-pre-commit install
-echo -e "${GREEN}✓ Pre-commit hooks installed${NC}"
+if [ "$HAS_PRECOMMIT" = true ]; then
+    echo -e "\n${YELLOW}🪝 Installing pre-commit hooks...${NC}"
+    pre-commit install
+    echo -e "${GREEN}✓ Pre-commit hooks installed${NC}"
+fi
 
 # Install dependencies
 echo -e "\n${YELLOW}📦 Installing dependencies...${NC}"

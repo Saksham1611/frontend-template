@@ -12,41 +12,42 @@ Write-Host "========================================" -ForegroundColor Green
 $ProjectNameUnderscore = $ProjectName -replace '-', '_'
 Write-Host "📦 Project name: $ProjectName" -ForegroundColor Yellow
 
-# Check prerequisites
+# Check for node
 Write-Host "`n🔍 Checking prerequisites..." -ForegroundColor Yellow
+try {
+    $null = Get-Command node -ErrorAction Stop
+    $nodeVersion = node -v
+    Write-Host "✓ Node.js found ($nodeVersion)" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Node.js is required but not installed." -ForegroundColor Red
+    Write-Host "Please install Node.js (v20+) from: https://nodejs.org/"
+    exit 1
+}
 
+# Check for pre-commit
+$hasPrecommit = $true
 try {
     $null = Get-Command pre-commit -ErrorAction Stop
     Write-Host "✓ pre-commit found" -ForegroundColor Green
 } catch {
-    Write-Host "❌ pre-commit is required but not installed." -ForegroundColor Red
-    Write-Host "Install with: pip install pre-commit"
-    exit 1
-}
-
-try {
-    $null = Get-Command node -ErrorAction Stop
-    Write-Host "✓ Node.js found" -ForegroundColor Green
-} catch {
-    Write-Host "❌ Node.js is required but not installed." -ForegroundColor Red
-    exit 1
+    Write-Host "⚠️ pre-commit not found. Initial setup will skip git hook installation." -ForegroundColor Yellow
+    $hasPrecommit = $false
 }
 
 # Replace placeholders
 Write-Host "`n📝 Replacing placeholders..." -ForegroundColor Yellow
+$Placeholder = "bootstrap-project-frontend"
 
 if (Test-Path "package.json") {
     $content = Get-Content "package.json" -Raw
-    $content = $content -replace '"name": "frontend-template"', "`"name`": `"$ProjectName`""
-    $content = $content -replace '"name": "{{project_name}}"', "`"name`": `"$ProjectName`""
+    $content = $content -replace $Placeholder, $ProjectName
     Set-Content "package.json" $content -NoNewline
     Write-Host "  ✓ package.json"
 }
 
 if (Test-Path "index.html") {
     $content = Get-Content "index.html" -Raw
-    $content = $content -replace '<title>Frontend Template</title>', "<title>$ProjectName</title>"
-    $content = $content -replace '<title>{{project_name}}</title>', "<title>$ProjectName</title>"
+    $content = $content -replace $Placeholder, $ProjectName
     Set-Content "index.html" $content -NoNewline
     Write-Host "  ✓ index.html"
 }
@@ -59,17 +60,19 @@ if (Test-Path ".github\workflows\docker-build.yml") {
 }
 
 # Reinitialize git
-Write-Host "`n🔄 Reinitializing git repository..." -ForegroundColor Yellow
 if (Test-Path ".git") {
+    Write-Host "`n🔄 Reinitializing git repository..." -ForegroundColor Yellow
     Remove-Item ".git" -Recurse -Force
+    git init
+    Write-Host "✓ Fresh git repository created" -ForegroundColor Green
 }
-git init
-Write-Host "✓ Fresh git repository created" -ForegroundColor Green
 
 # Install pre-commit hooks
-Write-Host "`n🪝 Installing pre-commit hooks..." -ForegroundColor Yellow
-pre-commit install
-Write-Host "✓ Pre-commit hooks installed" -ForegroundColor Green
+if ($hasPrecommit) {
+    Write-Host "`n🪝 Installing pre-commit hooks..." -ForegroundColor Yellow
+    pre-commit install
+    Write-Host "✓ Pre-commit hooks installed" -ForegroundColor Green
+}
 
 # Install dependencies
 Write-Host "`n📦 Installing dependencies..." -ForegroundColor Yellow

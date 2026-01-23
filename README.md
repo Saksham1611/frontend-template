@@ -44,10 +44,10 @@ cd my-project
 
 ## What the Init Script Does
 
-1. ✅ Checks for `pre-commit` and `node` (fails with instructions if missing)
+1. ✅ Checks for `node` and `pre-commit`
 2. ✅ Replaces all placeholders with your project name
 3. ✅ Reinitializes git (fresh history)
-4. ✅ Installs pre-commit hooks
+4. ✅ Installs pre-commit hooks (if `pre-commit` is found)
 5. ✅ Runs `npm install`
 
 ## Prerequisites
