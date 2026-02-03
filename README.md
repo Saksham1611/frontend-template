@@ -1,114 +1,108 @@
 # Frontend Template
 
-A production-ready React frontend template with TypeScript, TanStack Router, and Tailwind CSS.
-
-## Features
-
-- **Vite + React 19**: Lightning-fast development
-- **TypeScript**: Full type safety
-- **TanStack Router**: File-based routing
-- **TanStack Query**: Server state management
-- **Tailwind CSS + shadcn/ui**: Modern styling
-- **Zustand**: Client state management
-- **Docker**: Production-ready with nginx
-- **Pre-commit**: Automated code quality (prettier, eslint, tsc)
+A Next.js (App Router) frontend template designed to integrate with FastAPI backends using the BFF (Backend-for-Frontend) pattern.
 
 ## Quick Start
 
-### Option 1: Git Clone (Universal)
-
 ```bash
-git clone --depth=1 https://github.com/Wellnest-Group/wng_ui_template my-project
-cd my-project
-./init-project.sh my-project   # Unix/macOS
-# or
-.\init-project.ps1 my-project  # Windows PowerShell
-```
+# 1. Create new project
+npx create-next-app@latest your-project --typescript --tailwind --eslint
+cd your-project
 
-### Option 2: degit (Requires Node.js)
+# 2. Initialize Shadcn UI
+npx shadcn-ui@latest init
 
-```bash
-npx degit Wellnest-Group/wng_ui_template my-project
-cd my-project
-./init-project.sh my-project
-```
+# 3. Install core dependencies
+pnpm add framer-motion lucide-react clsx tailwind-merge zod zustand
 
-### Option 3: GitHub Template
+# 4. Add common components
+npx shadcn-ui@latest add button card input dialog skeleton
 
-1. Click **"Use this template"** on GitHub
-2. Clone your new repository
-3. Run the init script:
-   ```bash
-   ./init-project.sh my-project
-   ```
-
-## What the Init Script Does
-
-1. ✅ Checks for `node` and `pre-commit`
-2. ✅ Replaces all placeholders with your project name
-3. ✅ Reinitializes git (fresh history)
-4. ✅ Installs pre-commit hooks (if `pre-commit` is found)
-5. ✅ Runs `npm install`
-
-## Prerequisites
-
-- [Node.js](https://nodejs.org/) 20+
-- [pre-commit](https://pre-commit.com/) - Git hooks framework
-
-## Development
-
-```bash
-# Start dev server
-npm run dev
-
-# Type check
-npm run type-check
-
-# Lint
-npm run lint
-
-# Format
-npm run format
-
-# Build for production
-npm run build
-```
-
-## Docker
-
-```bash
-# Build
-docker build -t my-project .
-
-# Run
-docker run -p 3000:80 my-project
+# 5. Start development
+pnpm dev
 ```
 
 ## Project Structure
 
+```text
+src/
+├── app/                  # Next.js App Router
+│   ├── (auth)/           # Auth route group
+│   ├── (dashboard)/      # Main app route group
+│   ├── api/              # BFF Route Handlers
+│   └── globals.css
+├── components/
+│   ├── ui/               # Shadcn components
+│   └── motion/           # Framer Motion wrappers
+├── hooks/                # Custom hooks
+├── lib/                  # Utilities
+├── store/                # Zustand stores
+└── types/                # TypeScript interfaces
 ```
-├── src/
-│   ├── components/
-│   │   ├── ui/           # shadcn/ui primitives
-│   │   └── domain/       # App-specific components
-│   ├── routes/           # TanStack Router pages
-│   ├── hooks/            # Custom React hooks
-│   ├── lib/              # Utilities & API config
-│   ├── services/         # Business logic
-│   └── stores/           # Zustand stores
-├── Dockerfile
-├── docker-build.yml      # CI/CD workflow
-└── package.json
+
+## Key Patterns
+
+### BFF Proxy
+
+All FastAPI calls go through Next.js Route Handlers:
+
+```typescript
+// app/api/data/route.ts
+export async function GET() {
+  const res = await fetch(`${process.env.FASTAPI_URL}/data`);
+  return Response.json(await res.json());
+}
 ```
 
-## Coding Standards
+### Optimistic Updates
 
-- Use URL as source of truth for UI state
-- Use TanStack Query for all data fetching (no `useEffect` for data)
-- Wrap API calls in custom hooks
-- Mobile-first responsive design
-- Follow the [AGENTS.md](./AGENTS.md) for AI-assisted development
+Use `useOptimistic` for instant UI feedback:
 
-## License
+```typescript
+const [optimisticValue, addOptimistic] = useOptimistic(value);
+```
 
-MIT
+### AI Streaming
+
+Stream responses through Route Handlers:
+
+```typescript
+// Pipe FastAPI StreamingResponse to the browser
+return new Response(response.body, {
+  headers: { 'Content-Type': 'text/event-stream' },
+});
+```
+
+### Premium Motion
+
+Spring physics for smooth animations:
+
+```typescript
+<motion.div transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+```
+
+## Type Sync
+
+Generate TypeScript types from FastAPI:
+
+```bash
+npx openapi-typescript http://localhost:8000/openapi.json --output ./src/types/api.ts
+```
+
+## Guidelines
+
+| Document | Description |
+|----------|-------------|
+| [AGENTS.md](./AGENTS.md) | Coding standards and project structure |
+| [Guidelines/architecture.md](./Guidelines/architecture.md) | Core architecture and BFF pattern |
+| [Guidelines/premium-ux.md](./Guidelines/premium-ux.md) | Motion, streaming, and UX patterns |
+| [Guidelines/setup.md](./Guidelines/setup.md) | Development workflow and commands |
+
+## Tech Stack
+
+- **Framework**: Next.js 14+ (App Router)
+- **Styling**: Tailwind CSS
+- **Components**: shadcn/ui
+- **Motion**: Framer Motion
+- **State**: Zustand
+- **Backend**: FastAPI (separate repo)
